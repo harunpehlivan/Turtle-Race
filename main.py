@@ -34,10 +34,9 @@ class racer(object):
 
 
 def setupFile(name, colors):
-    file = open(name, 'w')
-    for color in colors:
-        file.write(color + ' 0 \n')
-    file.close()
+    with open(name, 'w') as file:
+        for color in colors:
+            file.write(color + ' 0 \n')
 
 
 def startGame():
@@ -59,41 +58,35 @@ def startGame():
         maxColor = []
         maxDis = 0
         for t in tList:
-            if t.pos[1] > 230 and t.pos[1] > maxDis:
-                maxDis = t.pos[1]
-                maxColor = []
-                maxColor.append(t.color)
-            elif t.pos[1] > 230 and t.pos[1] == maxDis:
-                maxDis = t.pos[1]
-                maxColor.append(t.color)
+            if t.pos[1] > 230:
+                if t.pos[1] > maxDis:
+                    maxDis = t.pos[1]
+                    maxColor = [t.color]
+                elif t.pos[1] == maxDis:
+                    maxDis = t.pos[1]
+                    maxColor.append(t.color)
 
-        if len(maxColor) > 0:
+        if maxColor:
             run = False
             print('The winner is: ')
             for win in maxColor:
                 print(win)
 
     oldScore = []
-    file = open('scores.txt', 'r')
-    for line in file:
-        l = line.split()
-        color = l[0]
-        score = l[1]
-        oldScore.append([color, score])
+    with open('scores.txt', 'r') as file:
+        for line in file:
+            l = line.split()
+            color = l[0]
+            score = l[1]
+            oldScore.append([color, score])
 
-    file.close()
+    with open('scores.txt', 'w') as file:
+        for entry in oldScore:
+            for winner in maxColor:
+                if entry[0] == winner:
+                    entry[1] = int(entry[1]) + 1
 
-    file = open('scores.txt', 'w')
-
-    for entry in oldScore:
-        for winner in maxColor:
-            if entry[0] == winner:
-                entry[1] = int(entry[1]) + 1
-
-        file.write(str(entry[0]) + ' ' + str(entry[1]) + '\n')
-
-
-    file.close()
+            file.write(str(entry[0]) + ' ' + str(entry[1]) + '\n')
 
 
 start = input('Would you like to play')
